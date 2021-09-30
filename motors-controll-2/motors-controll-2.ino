@@ -37,6 +37,7 @@ void loop() {
       //set led
       digitalWrite(13, HIGH);
       //start motors full speed
+      Serial.write("start Motors");
       Serial.println("Go go go");
       md.flipM1(true);
       md.setM1Speed(400);
@@ -64,6 +65,8 @@ void loop() {
       Serial.println("Stop you are going over me");
 
       //stop motors full speed
+      Serial.write("stop Motors");
+
       md.setM1Speed(0);
       stopIfFault();
       if (abs(0) % 200 == 100)
@@ -91,11 +94,13 @@ void stopIfFault()
   if (md.getM1Fault())
   {
     Serial.println("M1 fault");
+    delay(1000);
     while (1);
   }
   if (md.getM2Fault())
   {
     Serial.println("M2 fault");
+    delay(1000);
     while (1);
   }
 }
