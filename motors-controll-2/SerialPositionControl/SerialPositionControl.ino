@@ -13,6 +13,7 @@
 
 #include <Tic.h>
 #include <NewPing.h>
+#include <stdlib.h>
 
 // On boards with a hardware serial port available for use, use
 // that port to communicate with the Tic. For other boards,
@@ -26,24 +27,26 @@ SoftwareSerial ticSerial(10, 11);
 #endif
 // distanse sensor
 
-#define TRIGGER_PIN 6
+#define TRIGGER_PIN 5
 
-#define ECHO_PIN 5
+#define ECHO_PIN 6
 
 #define MAX_DISTANCE 200
 long distance;
-
+int looper;
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 TicSerial tic(ticSerial);
 
 void setup()
 {
+  looper = 0;
+
   ticSerial.begin(9600);
 
   // Set the baud rate.
   Serial.begin(9600);
 
-  Serial.print("Hello Arduino online");
+  Serial.println("Hello Arduino online");
 
   // Give the Tic some time to start up.
   delay(20);
@@ -51,6 +54,7 @@ void setup()
   // Set the Tic's current position to 0, so that when we command
   // it to move later, it will move a predictable amount.
   tic.haltAndSetPosition(0);
+  Serial.println("Halt tic pos 0");
 
   // Tells the Tic that it is OK to start driving the motor.  The
   // Tic's safe-start feature helps avoid unexpected, accidental
@@ -59,6 +63,8 @@ void setup()
   // command.  The safe-start feature can be disbled in the Tic
   // Control Center.
   tic.exitSafeStart();
+  Serial.println("Tic exit safe start");
+
 }
 
 // Sends a "Reset command timeout" command to the Tic.  We must
@@ -98,53 +104,56 @@ void waitForPosition(int32_t targetPosition)
 
 void loop()
 {
+  tic.exitSafeStart();
+
   //Serial.println("in tha loop");
   distance = calculateDistance();
-  Serial.println(distance);
+  Serial.print(distance);
+  Serial.println (" cm");
 
-  //  digitalWrite(trigPin, LOW);
-  //  delayMicroseconds(2);
-  //  digitalWrite(trigPin, HIGH);
-  //  delayMicroseconds(10);
-  //  digitalWrite(trigPin, LOW);
-  //
-  //  duration = pulseIn(echoPin, HIGH);
-  //
-  //  distance = (duration * 0.034 / 2);
-  //  //Serial.print("duration : ");
-  //  //Serial.println(duration);
-  //
-  //  Serial.print("Distance : ");
-  //  Serial.print(distance);
-  //  Serial.println(" cm ");
-  //  delay(100);
 
-  // Tell the Tic to move to position 100, and wait until it gets
-  // there.
+  if (distance < 40 && distance > 5 )
+  {
+    int r = rand() % 3;
+    Serial.println(r);
+    if (r % 2 == 0) {
+      tic.setTargetPosition(230);
+      waitForPosition(100);
+      // delayWhileResettingCommandTimeout(3000);
+      delay(1500);
+      // Tell the Tic to move to position -100, and delay for 3000 ms
+      // to give it time to get there.
 
-  //tic.setTargetPosition(100);
-  //waitForPosition(100);
+      tic.setTargetPosition(0);
+      Serial.print("setTargetPosition 0");
 
-  // Tell the Tic to move to position -100, and delay for 3000 ms
-  // to give it time to get there.
+      // waitForPosition(100);
+      delayWhileResettingCommandTimeout(2000);
+      Serial.print("waitForPosition 3000");
 
-  //tic.setTargetPosition(-100);
-  //delayWhileResettingCommandTimeout(3000);
+      //delayWhileResettingCommandTimeout(3000);
+    }
+    Serial.print("delay 500");
+
+    delay(500);
+  }
+
 }
 
 int calculateDistance() {
-delay(50);
+  int dis = 0;
+  delay(50);
 
-unsigned int uS = sonar.ping();
+  unsigned int uS = sonar.ping();
 
-pinMode(ECHO_PIN,OUTPUT);
+  pinMode(ECHO_PIN, OUTPUT);
 
-digitalWrite(ECHO_PIN,LOW);
+  digitalWrite(ECHO_PIN, LOW);
 
-pinMode(ECHO_PIN,INPUT);
+  pinMode(ECHO_PIN, INPUT);
 
-// Serial.print("Ping: ");
-
-return(uS / US_ROUNDTRIP_CM);
+  // Serial.print("Ping: ");
+  dis = uS / US_ROUNDTRIP_CM;
+  return (dis);
 
 }

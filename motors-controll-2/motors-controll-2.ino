@@ -33,13 +33,12 @@ void loop() {
     Serial.println(incomingByte);
 
 
-    if (incomingByte == '1') {
+    if (incomingByte == '1') { // forward
       //set led
       digitalWrite(13, HIGH);
       //start motors full speed
       Serial.write("start Motors");
       Serial.println("Go go go");
-      md.flipM1(true);
       md.setM1Speed(400);
       stopIfFault();
       if (abs(400) % 200 == 100)
@@ -47,8 +46,7 @@ void loop() {
         Serial.print("M1 current: ");
         Serial.println(md.getM1CurrentMilliamps());
       }
-
-
+      md.flipM2(true);
       md.setM2Speed(400);
       stopIfFault();
       if (abs(400) % 200 == 100)
@@ -58,7 +56,7 @@ void loop() {
       }
 
     }
-    else if (incomingByte == '0')
+    else if (incomingByte == '0') // stop
     {
       //led off
       digitalWrite(13, LOW);
@@ -79,6 +77,78 @@ void loop() {
       md.setM2Speed(0);
       stopIfFault();
       if (abs(0) % 200 == 100)
+      {
+        Serial.print("M1 current: ");
+        Serial.println(md.getM2CurrentMilliamps());
+      }
+
+    }
+    else if (incomingByte == '2') // Left
+    {
+      //set led
+      digitalWrite(13, HIGH);
+      //start motors full speed
+      Serial.write("start Motors move left");
+      Serial.println("Go go go");
+      md.setM1Speed(400);
+      stopIfFault();
+      if (abs(400) % 200 == 100)
+      {
+        Serial.print("M1 current: ");
+        Serial.println(md.getM1CurrentMilliamps());
+      }
+      md.flipM2(true);
+      md.setM2Speed(-400);
+      stopIfFault();
+      if (abs(400) % 200 == 100)
+      {
+        Serial.print("M1 current: ");
+        Serial.println(md.getM2CurrentMilliamps());
+      }
+
+    }
+    else if (incomingByte == '3') // Right
+    {
+      //set led
+      digitalWrite(13, HIGH);
+      //start motors full speed
+      Serial.write("start Motors move right");
+      Serial.println("Go go go");
+      md.setM1Speed(-400);
+      stopIfFault();
+      if (abs(400) % 200 == 100)
+      {
+        Serial.print("M1 current: ");
+        Serial.println(md.getM1CurrentMilliamps());
+      }
+      md.flipM2(true);
+      md.setM2Speed(200);
+      stopIfFault();
+      if (abs(400) % 200 == 100)
+      {
+        Serial.print("M1 current: ");
+        Serial.println(md.getM2CurrentMilliamps());
+      }
+
+    }
+    else if (incomingByte == '4') // Back
+    {
+      //set led
+      digitalWrite(13, HIGH);
+      //start motors full speed
+      Serial.write("start Motors move right");
+      Serial.println("Go go go");
+      md.setM1Speed(-400);
+      stopIfFault();
+      if (abs(400) % 200 == 100)
+      {
+        Serial.print("M1 current: ");
+        Serial.println(md.getM1CurrentMilliamps());
+      }
+      md.flipM2(true);
+      md.setM2Speed(-400);
+      stopIfFault();
+      if (abs(400) % 200 == 100)
       {
         Serial.print("M1 current: ");
         Serial.println(md.getM2CurrentMilliamps());
